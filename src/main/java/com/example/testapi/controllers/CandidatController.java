@@ -5,7 +5,6 @@ import com.example.testapi.repository.CandidatRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -48,31 +47,21 @@ public class CandidatController {
 
     //save
     @PostMapping("/save")
-    public ResponseEntity<Candidat> saveCandidat(@Valid @RequestBody Candidat candidat, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.toString());
-        } else {
-            return ResponseEntity.status(HttpStatus.CREATED).body(
-                    candidatRepository.save(candidat)
-            );
-        }
+    public ResponseEntity<Candidat> saveCandidat(@Valid @RequestBody Candidat candidat) {
+        return new ResponseEntity<>(candidatRepository.save(candidat), HttpStatus.CREATED);
     }
 
     //update
     @PutMapping("/update/{candidat}")
     public ResponseEntity<Candidat> updateCandidat (@PathVariable(name = "candidat", required = false) Candidat candidat,
-                                                    @Valid @RequestBody Candidat candidatUpdate, BindingResult bindingResult) {
+                                                    @Valid @RequestBody Candidat candidatUpdate) {
         if (candidat == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "candidat introuvable");
         } else {
-            if (bindingResult.hasErrors()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, bindingResult.toString());
-            } else {
-                candidatUpdate.setId(candidat.getId());
-                return ResponseEntity.status(HttpStatus.CREATED).body(
-                        candidatRepository.save(candidatUpdate)
-                );
-            }
+            candidatUpdate.setId(candidat.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    candidatRepository.save(candidatUpdate)
+            );
         }
     }
 
